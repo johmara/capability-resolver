@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CapabilityResolver.Core/CapabilityResolver.Core.csproj" />
+    <Project Path="src/CapabilityResolver.Formats.Json/CapabilityResolver.Formats.Json.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CapabilityResolver.Core.Tests/CapabilityResolver.Core.Tests.csproj" />
+    <Project Path="tests/CapabilityResolver.Formats.Tests/CapabilityResolver.Formats.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,7 @@
+rules:
+  - type: mutex
+    a: SecureStorage
+    b: InsecureStorage
+    rationale: >-
+      A single device image ships one storage stack. Mixing an encrypted and an unencrypted
+      volume defeats the guarantee encryption is meant to provide.

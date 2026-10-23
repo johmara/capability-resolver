@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>CapabilityResolver.Formats.Json</PackageId>
+    <Description>JSON and YAML feature model formats for CapabilityResolver.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+    <ProjectReference Include="..\CapabilityResolver.Core\CapabilityResolver.Core.csproj" />
+  </ItemGroup>
+
+</Project>

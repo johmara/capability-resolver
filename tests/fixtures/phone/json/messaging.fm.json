@@ -1,0 +1,36 @@
+{
+  "id": "phone.messaging",
+  "name": "Messaging",
+  "scope": { "assetPath": "repo/messaging/", "owner": "Messaging scope" },
+  "features": {
+    "name": "Messaging",
+    "requires": ["KeyboardInput"],
+    "relations": [
+      {
+        "type": "OR",
+        "children": [
+          { "name": "SMS" },
+          {
+            "name": "Email",
+            "requires": ["InternetConnectivity"],
+            "relations": [
+              {
+                "type": "OPTIONAL",
+                "children": [
+                  { "name": "Attachments" },
+                  { "name": "ComicEmail", "requires": ["EmojiRendering"] }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "OPTIONAL",
+        "children": [
+          { "name": "EncryptedMessaging", "requires": ["SecureStorage"] }
+        ]
+      }
+    ]
+  }
+}

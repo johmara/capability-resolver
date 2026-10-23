@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>CapabilityResolver.Core</PackageId>
+    <Description>Capability resolution across decentralized feature models.</Description>
+  </PropertyGroup>
+
+</Project>

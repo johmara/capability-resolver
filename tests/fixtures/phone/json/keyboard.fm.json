@@ -1,0 +1,31 @@
+{
+  "id": "phone.keyboard",
+  "name": "Keyboard",
+  "scope": { "assetPath": "repo/keyboard/", "owner": "Keyboard scope" },
+  "features": {
+    "name": "Keyboard",
+    "relations": [
+      {
+        "type": "MANDATORY",
+        "children": [
+          { "id": "BaseKeyboard", "name": "Base Keyboard", "provides": ["KeyboardInput"] },
+          {
+            "name": "Layouts",
+            "relations": [
+              {
+                "type": "XOR",
+                "children": [{ "name": "QWERTY" }, { "name": "AZERTY" }, { "name": "QWERTZ" }]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "OPTIONAL",
+        "children": [
+          { "id": "EmojiSupport", "name": "Emoji Support", "provides": ["EmojiRendering"] }
+        ]
+      }
+    ]
+  }
+}
