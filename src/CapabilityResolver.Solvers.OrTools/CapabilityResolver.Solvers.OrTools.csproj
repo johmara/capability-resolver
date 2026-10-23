@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>CapabilityResolver.Solvers.OrTools</PackageId>
+    <Description>OR-Tools CP-SAT solver backend for CapabilityResolver.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.OrTools" Version="9.15.6755" />
+    <ProjectReference Include="..\CapabilityResolver.Core\CapabilityResolver.Core.csproj" />
+  </ItemGroup>
+
+</Project>
