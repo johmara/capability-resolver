@@ -17,10 +17,24 @@ public static class ModelDump
         return sb.ToString();
     }
 
-    private static void Write(StringBuilder sb, Feature feature, int depth)
+    /// <summary>
+    /// Like <see cref="ToText"/> but without display names, model name and scope: only what every format can
+    /// express (ids, tree, groups, capabilities, constraints). Used to compare one model across formats.
+    /// </summary>
+    public static string ToStructureText(FeatureModel model)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"model {model.Id}");
+        Write(sb, model.Root, 0, includeNames: false);
+        foreach (var constraint in model.Constraints) sb.AppendLine($"constraint {constraint}");
+        return sb.ToString();
+    }
+
+    private static void Write(StringBuilder sb, Feature feature, int depth, bool includeNames = true)
     {
         var pad = new string(' ', depth * 2);
-        sb.Append($"{pad}{feature.Id} \"{feature.Name}\"");
+        sb.Append($"{pad}{feature.Id}");
+        if (includeNames) sb.Append($" \"{feature.Name}\"");
         if (feature.IsAbstract) sb.Append(" abstract");
         if (feature.Requires.Count > 0) sb.Append($" requires=[{string.Join(",", feature.Requires.Order())}]");
         if (feature.Provides.Count > 0) sb.Append($" provides=[{string.Join(",", feature.Provides.Order())}]");
@@ -30,7 +44,7 @@ public static class ModelDump
         {
             var bounds = group.Kind == GroupKind.Cardinality ? $" [{group.Min}..{group.Max}]" : "";
             sb.AppendLine($"{pad}  <{group.Kind}{bounds}>");
-            foreach (var child in group.Children) Write(sb, child, depth + 2);
+            foreach (var child in group.Children) Write(sb, child, depth + 2, includeNames);
         }
     }
 }
