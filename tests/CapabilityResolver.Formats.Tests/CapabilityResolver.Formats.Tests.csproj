@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\CapabilityResolver.Formats.Json\CapabilityResolver.Formats.Json.csproj" />
     <ProjectReference Include="..\..\src\CapabilityResolver.Formats.Uvl\CapabilityResolver.Formats.Uvl.csproj" />
+    <ProjectReference Include="..\..\src\CapabilityResolver.Formats.Clafer\CapabilityResolver.Formats.Clafer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

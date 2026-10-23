@@ -1,0 +1,5 @@
+or Connectivity
+    MobileData
+        provides -> string = "InternetConnectivity"
+    Wifi
+        provides -> string = "InternetConnectivity"
