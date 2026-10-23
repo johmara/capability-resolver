@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CapabilityResolver.Formats.Json\CapabilityResolver.Formats.Json.csproj" />
+    <ProjectReference Include="..\..\src\CapabilityResolver.Formats.Uvl\CapabilityResolver.Formats.Uvl.csproj" />
   </ItemGroup>
 
   <ItemGroup>

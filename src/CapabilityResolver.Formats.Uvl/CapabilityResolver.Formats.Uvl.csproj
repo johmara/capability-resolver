@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>CapabilityResolver.Formats.Uvl</PackageId>
+    <Description>UVL (Universal Variability Language) feature model reader for CapabilityResolver.</Description>
+    <!-- ANTLR-generated code carries CLSCompliant attributes; the assembly does not declare CLS compliance. -->
+    <NoWarn>$(NoWarn);CS3021</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+    <ProjectReference Include="..\CapabilityResolver.Core\CapabilityResolver.Core.csproj" />
+  </ItemGroup>
+
+</Project>

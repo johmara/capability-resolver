@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/CapabilityResolver.Core/CapabilityResolver.Core.csproj" />
     <Project Path="src/CapabilityResolver.Formats.Json/CapabilityResolver.Formats.Json.csproj" />
+    <Project Path="src/CapabilityResolver.Formats.Uvl/CapabilityResolver.Formats.Uvl.csproj" />
     <Project Path="src/CapabilityResolver.Solvers.OrTools/CapabilityResolver.Solvers.OrTools.csproj" />
   </Folder>
   <Folder Name="/tests/">

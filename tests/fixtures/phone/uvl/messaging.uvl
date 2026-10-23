@@ -1,0 +1,12 @@
+namespace phone.messaging
+
+features
+    Messaging {requires ['KeyboardInput']}
+        or
+            SMS
+            Email {requires ['InternetConnectivity']}
+                optional
+                    Attachments
+                    ComicEmail {requires ['EmojiRendering']}
+        optional
+            EncryptedMessaging {requires ['SecureStorage']}

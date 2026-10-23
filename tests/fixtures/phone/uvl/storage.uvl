@@ -1,0 +1,7 @@
+namespace phone.storage
+
+features
+    Storage
+        or
+            LegacyStorage {provides ['InsecureStorage']}
+            EncryptedVolume {provides ['SecureStorage']}
