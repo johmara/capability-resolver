@@ -1,0 +1,15 @@
+id: phone.connectivity
+name: Connectivity
+scope:
+  assetPath: repo/connectivity/
+  owner: Connectivity scope
+features:
+  name: Connectivity
+  relations:
+    - type: OR
+      children:
+        - id: MobileData
+          name: Mobile Data
+          provides: [InternetConnectivity]
+        - name: Wifi
+          provides: [InternetConnectivity]

@@ -1,0 +1,7 @@
+namespace broken.linked
+
+imports
+    other.Model as other
+
+features
+    Root

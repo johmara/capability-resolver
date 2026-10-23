@@ -77,3 +77,29 @@ internal static class YamlToJson
         _ => JsonValue.Create(value.ToString()),
     };
 }
+
+/// <summary>
+/// Reads a configuration file (JSON or YAML): an object from model id to the features selected by hand,
+/// e.g. <c>{ "phone.messaging": ["Email"], "phone.connectivity": [] }</c>.
+/// </summary>
+public static class ConfigurationReader
+{
+    public static Configuration Load(string path)
+    {
+        var text = File.ReadAllText(path);
+        var node = path.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
+            ? JsonModelReader.Parse(text, path)
+            : YamlToJson.Parse(text, path);
+
+        if (node is not JsonObject obj) throw new ModelFormatException(path, "expected an object from model id to a list of features.");
+
+        return new Configuration(obj.Select(kv => KeyValuePair.Create(
+            kv.Key,
+            (IReadOnlySet<string>)(kv.Value switch
+            {
+                null => new HashSet<string>(),
+                JsonArray array => array.Select(FmJson.Str).OfType<string>().ToHashSet(),
+                var single => FmJson.Str(single) is { } s ? new HashSet<string> { s } : new HashSet<string>(),
+            }))));
+    }
+}

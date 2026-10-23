@@ -1,0 +1,9 @@
+Keyboard
+    BaseKeyboard
+        provides -> string = "KeyboardInput"
+    xor Layouts
+        QWERTY
+        AZERTY
+        QWERTZ
+    EmojiSupport ?
+        provides -> string = "EmojiRendering"

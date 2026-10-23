@@ -1,0 +1,6 @@
+namespace broken.syntax
+
+features
+    Root
+        sometimes
+            Child

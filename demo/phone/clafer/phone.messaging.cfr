@@ -1,0 +1,13 @@
+// Messaging scope. In Clafer a group applies to all children of a clafer,
+// so the OR choice between SMS and Email gets its own clafer.
+Messaging
+    requires -> string = "KeyboardInput"
+    or MessageType
+        SMS
+        Email
+            requires -> string = "InternetConnectivity"
+            Attachments ?
+            ComicEmail ?
+                requires -> string = "EmojiRendering"
+    EncryptedMessaging ?
+        requires -> string = "SecureStorage"

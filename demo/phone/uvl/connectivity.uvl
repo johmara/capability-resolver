@@ -1,0 +1,7 @@
+namespace phone.connectivity
+
+features
+    Connectivity
+        or
+            MobileData {provides ['InternetConnectivity']}
+            Wifi {provides ['InternetConnectivity']}

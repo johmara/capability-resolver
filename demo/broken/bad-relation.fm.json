@@ -1,0 +1,6 @@
+{
+  "features": {
+    "name": "Root",
+    "relations": [{ "type": "SOMETIMES", "children": [{ "name": "Child" }] }]
+  }
+}

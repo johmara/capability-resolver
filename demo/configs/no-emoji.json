@@ -1,0 +1,6 @@
+{
+  "phone.messaging": ["Email", "ComicEmail"],
+  "phone.connectivity": ["Wifi"],
+  "phone.keyboard": ["AZERTY"],
+  "phone.storage": ["EncryptedVolume"]
+}

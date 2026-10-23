@@ -1,0 +1,5 @@
+or Storage
+    LegacyStorage
+        provides -> string = "InsecureStorage"
+    EncryptedVolume
+        provides -> string = "SecureStorage"

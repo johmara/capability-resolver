@@ -1,0 +1,7 @@
+features:
+  name: Root
+  relations:
+    - type: OPTIONAL
+      children: [{ name: A }, { name: B }]
+constraints:
+  - "A => Ghost"

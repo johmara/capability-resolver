@@ -1,0 +1,6 @@
+{
+  "phone.messaging": ["Email", "ComicEmail"],
+  "phone.connectivity": [],
+  "phone.keyboard": ["QWERTY", "EmojiSupport"],
+  "phone.storage": ["LegacyStorage"]
+}

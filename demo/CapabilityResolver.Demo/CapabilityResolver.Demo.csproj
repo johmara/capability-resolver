@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>fmdemo</AssemblyName>
+    <RootNamespace>CapabilityResolver.Demo</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CapabilityResolver.Formats.Json\CapabilityResolver.Formats.Json.csproj" />
+    <ProjectReference Include="..\..\src\CapabilityResolver.Formats.Uvl\CapabilityResolver.Formats.Uvl.csproj" />
+    <ProjectReference Include="..\..\src\CapabilityResolver.Formats.Clafer\CapabilityResolver.Formats.Clafer.csproj" />
+    <ProjectReference Include="..\..\src\CapabilityResolver.Solvers.OrTools\CapabilityResolver.Solvers.OrTools.csproj" />
+  </ItemGroup>
+
+</Project>

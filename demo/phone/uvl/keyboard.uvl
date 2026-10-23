@@ -1,0 +1,13 @@
+namespace phone.keyboard
+
+features
+    Keyboard
+        mandatory
+            BaseKeyboard {provides ['KeyboardInput']}
+            Layouts
+                alternative
+                    QWERTY
+                    AZERTY
+                    QWERTZ
+        optional
+            EmojiSupport {provides ['EmojiRendering']}

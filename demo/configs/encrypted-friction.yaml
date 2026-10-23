@@ -1,0 +1,6 @@
+# Encrypted messaging is satisfied by the Encrypted Volume, but Legacy Storage is still selected,
+# and the global rule says SecureStorage and InsecureStorage cannot coexist.
+phone.messaging: [Email, EncryptedMessaging]
+phone.connectivity: [MobileData]
+phone.keyboard: [QWERTY]
+phone.storage: [LegacyStorage, EncryptedVolume]

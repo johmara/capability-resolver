@@ -1,0 +1,16 @@
+id: phone.storage
+name: Storage
+scope:
+  assetPath: repo/storage/
+  owner: Storage scope
+features:
+  name: Storage
+  relations:
+    - type: OR
+      children:
+        - id: LegacyStorage
+          name: Legacy Storage
+          provides: [InsecureStorage]
+        - id: EncryptedVolume
+          name: Encrypted Volume
+          provides: [SecureStorage]

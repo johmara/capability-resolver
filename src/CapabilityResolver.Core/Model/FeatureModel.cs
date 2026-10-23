@@ -197,6 +197,9 @@ public sealed class Configuration
     public static Configuration Of(params (string ModelId, string[] Features)[] entries) =>
         new(entries.Select(e => KeyValuePair.Create(e.ModelId, (IReadOnlySet<string>)e.Features.ToHashSet())));
 
+    /// <summary>The model ids this configuration mentions, whether or not any feature is selected there.</summary>
+    public IEnumerable<string> ModelIds => _selected.Keys;
+
     public IReadOnlySet<string> For(string modelId) =>
         _selected.GetValueOrDefault(modelId) ?? new HashSet<string>();
 }
