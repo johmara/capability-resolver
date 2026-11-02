@@ -1,0 +1,5 @@
+{
+  "home.lighting": ["SmartBulbs", "MotionLights"],
+  "home.security": [],
+  "home.network": ["Thread"]
+}

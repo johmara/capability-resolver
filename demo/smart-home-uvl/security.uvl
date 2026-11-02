@@ -1,0 +1,16 @@
+// Security scope: owns cameras, sensors and how footage is kept.
+namespace home.security
+
+features
+    Security
+        or
+            Cameras {requires ['HighBandwidth'], provides ['VideoStream', 'MotionSensing']}
+            DoorSensors {requires ['WirelessMesh'], provides ['MotionSensing']}
+        optional
+            CloudBackup {requires ['CloudAccess']}
+            LocalOnlyMode {provides ['OfflineMode']}
+            EncryptedStorage {provides ['EncryptedVideo']}
+
+constraints
+    CloudBackup => Cameras
+    LocalOnlyMode => !CloudBackup

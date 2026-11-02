@@ -1,0 +1,5 @@
+{
+  "home.lighting": ["SmartBulbs"],
+  "home.security": ["Cameras"],
+  "home.network": ["WifiMesh"]
+}

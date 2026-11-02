@@ -1,0 +1,5 @@
+{
+  "home.lighting": ["SmartBulbs", "BluetoothMesh"],
+  "home.security": ["DoorSensors"],
+  "home.network": ["Zigbee"]
+}

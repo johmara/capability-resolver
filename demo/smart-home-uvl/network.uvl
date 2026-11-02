@@ -1,0 +1,12 @@
+// Network scope: how devices in the house talk to each other and to the outside.
+namespace home.network
+
+features
+    Network
+        optional
+            MeshRadio
+                alternative
+                    Zigbee {provides ['WirelessMesh']}
+                    Thread {provides ['WirelessMesh']}
+                    WifiMesh {provides ['WirelessMesh', 'HighBandwidth']}
+            CloudBridge {provides ['CloudAccess']}

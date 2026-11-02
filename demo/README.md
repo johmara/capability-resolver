@@ -54,7 +54,8 @@ dotnet run --project demo/CapabilityResolver.Demo -- <command> <dir> [options]
 | `phone/uvl` | the same scopes as `*.uvl` (official UVL grammar) |
 | `phone/clafer` | the same scopes as `phone.<scope>.cfr` (model id is the file name) |
 | `phone/mixed` | one scope per language: Messaging in UVL, Connectivity in Clafer, Keyboard in YAML, Storage in JSON |
-| `configs/` | selections to try (see below) |
+| `smart-home-uvl` | a second system in three UVL files (lighting, security, network) with cross-scope requirements and three global rules; has its own `configs/` and README |
+| `configs/` | selections to try for the phone example (see below) |
 | `broken/` | one invalid file per language, to see the error messages |
 
 Every directory also has `rules.json` or `rules.yaml` with the global rule

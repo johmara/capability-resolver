@@ -1,0 +1,5 @@
+{
+  "home.lighting": ["WiredDimmers"],
+  "home.security": ["Cameras", "LocalOnlyMode", "EncryptedStorage"],
+  "home.network": ["WifiMesh", "CloudBridge"]
+}

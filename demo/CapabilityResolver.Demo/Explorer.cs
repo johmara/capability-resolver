@@ -15,40 +15,90 @@ internal sealed class Explorer
 {
     private const int Width = 100;
 
-    private readonly DecentralizedSystem _system;
-    private readonly IReadOnlyList<LoadedModel> _loaded;
+    private readonly string _dir;
+    private readonly Options _options;
     private readonly Analyzer _analyzer;
     private readonly TextReader _in;
     private readonly TextWriter _out;
-    private readonly string? _scenarioDir;
+
+    private DecentralizedSystem _system = new([]);
+
+    public DecentralizedSystem System => _system;
+    private IReadOnlyList<LoadedModel> _loaded = [];
+    private List<string> _problems = [];
+    private string? _scenarioDir;
 
     private readonly Dictionary<string, HashSet<string>> _manual = new();
     private readonly Dictionary<int, (string ModelId, string FeatureId)> _byNumber = new();
     private readonly Dictionary<(string ModelId, string FeatureId), int> _numberOf = new();
     private ProviderSuggestion? _lastSuggestion;
 
-    public Explorer(
-        DecentralizedSystem system, IReadOnlyList<LoadedModel> loaded, Analyzer analyzer,
-        TextReader input, TextWriter output, string? scenarioDir)
+    public Explorer(string dir, Options options, Analyzer analyzer, TextReader input, TextWriter output)
     {
-        _system = system;
-        _loaded = loaded;
+        _dir = dir;
+        _options = options;
         _analyzer = analyzer;
         _in = input;
         _out = output;
-        _scenarioDir = scenarioDir;
+    }
 
-        foreach (var model in system.Models)
+    public enum Outcome { Quit, SwitchSet }
+
+    /// <summary>
+    /// (Re)reads every model file under the directory. Files that cannot be read are listed on screen and skipped, so
+    /// one typo does not hide the other scopes. Picks that still make sense in the reloaded models are kept.
+    /// </summary>
+    public void Load(List<string> messages)
+    {
+        var previous = _manual.ToDictionary(kv => kv.Key, kv => kv.Value);
+
+        List<LoadedModel> loaded;
+        try
         {
-            _manual[model.Id] = [];
+            (loaded, _problems) = Cli.Load(_dir);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            loaded = [];
+            _problems = [e.Message];
+        }
+
+        IReadOnlyList<GlobalRule> rules = [];
+        try
+        {
+            rules = Cli.LoadRules(_dir, _options);
+        }
+        catch (Exception e) when (e is Loading.ModelFormatException or IOException)
+        {
+            _problems.Add(e.Message);
+        }
+
+        _loaded = loaded.DistinctBy(l => l.Model.Id).ToList();
+        _system = new DecentralizedSystem(_loaded.Select(l => l.Model).ToList(), rules);
+        _scenarioDir = FindScenarioDir(_dir);
+        _lastSuggestion = null;
+
+        _byNumber.Clear();
+        _numberOf.Clear();
+        _manual.Clear();
+        foreach (var model in _system.Models)
+        {
             foreach (var id in model.FeatureOrder.Where(id => id != model.Root.Id))
             {
                 var number = _byNumber.Count + 1;
                 _byNumber[number] = (model.Id, id);
                 _numberOf[(model.Id, id)] = number;
             }
+
+            var kept = previous.GetValueOrDefault(model.Id)?.Where(model.Contains).ToHashSet() ?? [];
+            _manual[model.Id] = _analyzer.Propagate(model, kept).Consistent ? kept : [];
         }
     }
+
+    private static string? FindScenarioDir(string dir) =>
+        new[] { "configs", Path.Combine("..", "configs"), Path.Combine("..", "..", "configs") }
+            .Select(rel => Path.GetFullPath(Path.Combine(dir, rel)))
+            .FirstOrDefault(Directory.Exists);
 
     public void SetSelection(Configuration config, List<string> messages)
     {
@@ -60,7 +110,7 @@ internal sealed class Explorer
         }
     }
 
-    public int Run(List<string> messages)
+    public Outcome Run(List<string> messages)
     {
         while (true)
         {
@@ -69,7 +119,7 @@ internal sealed class Explorer
 
             _out.Write("> ");
             var line = _in.ReadLine();
-            if (line is null) return 0;
+            if (line is null) return Outcome.Quit;
 
             var words = line.Split([' ', ',', '\t'], StringSplitOptions.RemoveEmptyEntries);
             if (words.Length == 0) continue;
@@ -77,7 +127,13 @@ internal sealed class Explorer
             switch (words[0].ToLowerInvariant())
             {
                 case "q" or "quit" or "exit":
-                    return 0;
+                    return Outcome.Quit;
+                case "switch":
+                    return Outcome.SwitchSet;
+                case "reload" or "r":
+                    Load(messages);
+                    messages.Insert(0, $"Reloaded {_system.Models.Count} scope(s) from {_dir}." + (_problems.Count > 0 ? $" {_problems.Count} file(s) could not be read (see above)." : ""));
+                    break;
                 case "h" or "help" or "?":
                     messages.AddRange(Help().Split('\n'));
                     break;
@@ -290,6 +346,8 @@ internal sealed class Explorer
           load <scenario>        replace your picks with a scenario (scenarios lists them) or a config file
           save <file.json>       write your picks to a file
           reset                  clear all picks
+          reload                 re-read the model files from disk (edit a file, then reload; picks are kept)
+          switch                 go back to the menu and pick another set of models or another language
           quit
         Markers:  [x] picked by you   [+] selected because its scope forces it   [ ] not selected   [-] no longer possible
         """;
@@ -303,8 +361,20 @@ internal sealed class Explorer
         if (_out == Console.Out && !Console.IsOutputRedirected) Console.Clear();
         else _out.WriteLine(new string('=', Width));
 
-        _out.WriteLine($"FEATURE MODELS  ({_system.Models.Count} scopes; each is owned and configured on its own)");
+        _out.WriteLine($"FEATURE MODELS  ({_system.Models.Count} scopes from {_dir}; each is owned and configured on its own)");
         _out.WriteLine("Markers: [x] picked by you   [+] forced by its own scope   [ ] not selected   [-] no longer possible");
+
+        if (_problems.Count > 0)
+        {
+            _out.WriteLine();
+            _out.WriteLine($"COULD NOT READ {_problems.Count} FILE(S), skipped (fix and type reload):");
+            foreach (var problem in _problems) _out.WriteLine($"  {problem}");
+        }
+        if (_system.Models.Count == 0)
+        {
+            _out.WriteLine();
+            _out.WriteLine("No feature models loaded. Add *.fm.json, *.fm.yaml, *.uvl or *.cfr files to the directory and type reload.");
+        }
 
         foreach (var loaded in _loaded)
         {
@@ -314,12 +384,15 @@ internal sealed class Explorer
             PrintFeature(model, model.Root, 0, state);
         }
 
-        _out.WriteLine();
-        PrintResolver(state);
+        if (_system.Models.Count > 0)
+        {
+            _out.WriteLine();
+            PrintResolver(state);
+        }
 
         _out.WriteLine();
         foreach (var message in messages) _out.WriteLine($"* {message}");
-        _out.WriteLine("Type feature numbers to toggle, or: suggest <capability> | load <scenario> | reset | help | quit");
+        _out.WriteLine("Type feature numbers to toggle, or: suggest <capability> | load <scenario> | reload | switch | reset | help | quit");
     }
 
     private void PrintFeature(FeatureModel model, Feature feature, int depth, State state)

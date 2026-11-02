@@ -1,0 +1,13 @@
+# Global rules: direct constraints between scopes, always phrased over capabilities.
+rules:
+  - type: mutex
+    a: CloudAccess
+    b: OfflineMode
+    rationale: Local-only mode promises that nothing leaves the house, so it cannot run together with a cloud bridge.
+  - type: implies
+    a: VideoStream
+    b: EncryptedVideo
+    rationale: Video that is recorded must be encrypted at rest.
+  - type: singleProvider
+    capability: WirelessMesh
+    rationale: Only one wireless mesh can run in the house; two meshes interfere with each other.

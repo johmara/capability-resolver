@@ -1,0 +1,15 @@
+// Lighting scope: owns bulbs, dimmers and light automation.
+namespace home.lighting
+
+features
+    Lighting
+        or
+            SmartBulbs {requires ['WirelessMesh']}
+            WiredDimmers
+        optional
+            Scenes
+            MotionLights {requires ['MotionSensing']}
+            BluetoothMesh {provides ['WirelessMesh']}
+
+constraints
+    MotionLights => SmartBulbs

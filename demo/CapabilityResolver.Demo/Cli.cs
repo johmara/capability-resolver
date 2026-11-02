@@ -18,7 +18,8 @@ internal static class Cli
         fmdemo: try capability resolution across decentralized feature models.
 
         Usage:
-          fmdemo explore <dir> [--config <file>]                interactive: see the models, toggle features, watch the resolver
+          fmdemo                                                menu of sample model sets (one per language), then explore
+          fmdemo explore [<dir>] [--config <file>]              interactive: see the models, toggle features, watch the resolver
           fmdemo models  <dir>                                  list the scopes found and their feature trees
           fmdemo check   <dir> --config <file>                  resolve a configuration across all scopes
           fmdemo complete <dir> --config <file>                 can the selection be completed? what does it force?
@@ -48,18 +49,27 @@ internal static class Cli
     {
         try
         {
-            if (args.Length < 2 || args[0] is "-h" or "--help" or "help")
+            var command = args.Length == 0 ? "explore" : args[0];
+            if (command is "-h" or "--help" or "help")
             {
-                (args.Length == 0 || args[0] is "-h" or "--help" or "help" ? output : error).WriteLine(Usage);
-                return args.Length == 0 || args[0] is "-h" or "--help" or "help" ? 0 : 2;
+                output.WriteLine(Usage);
+                return 0;
             }
 
-            var options = Options.Parse(args[2..]);
-            var dir = args[1];
+            var rest = args.Skip(1).ToArray();
+            var dir = rest.Length > 0 && !rest[0].StartsWith("--") ? rest[0] : null;
+            var options = Options.Parse(dir is null ? rest : rest[1..]);
+
+            if (command == "explore") return Explore(dir, options, input, output);
+            if (dir is null)
+            {
+                error.WriteLine(Usage);
+                return 2;
+            }
             if (!Directory.Exists(dir)) return Fail(error, $"directory not found: {dir}");
 
             var (loaded, problems) = Load(dir);
-            if (args[0] == "models") return Models(dir, loaded, problems, output);
+            if (command == "models") return Models(dir, loaded, problems, output);
             if (problems.Count > 0)
             {
                 foreach (var problem in problems) error.WriteLine($"error: {problem}");
@@ -69,9 +79,8 @@ internal static class Cli
 
             var system = new DecentralizedSystem(loaded.Select(l => l.Model).ToList(), LoadRules(dir, options));
 
-            return args[0] switch
+            return command switch
             {
-                "explore" => Explore(dir, loaded, system, options, input, output),
                 "check" => Check(system, RequireConfig(system, options), options.Exact, output),
                 "complete" => Complete(system, RequireConfig(system, options), output),
                 "suggest" => Suggest(system, RequireConfig(system, options), options.Capability ?? throw new UsageException("suggest needs --capability <name>."), output),
@@ -91,7 +100,7 @@ internal static class Cli
         return 2;
     }
 
-    private static (List<LoadedModel> Loaded, List<string> Problems) Load(string dir)
+    internal static (List<LoadedModel> Loaded, List<string> Problems) Load(string dir)
     {
         var loaded = new List<LoadedModel>();
         var problems = new List<string>();
@@ -119,7 +128,7 @@ internal static class Cli
         return (loaded, problems);
     }
 
-    private static IReadOnlyList<GlobalRule> LoadRules(string dir, Options options)
+    internal static IReadOnlyList<GlobalRule> LoadRules(string dir, Options options)
     {
         var file = options.Rules
             ?? new[] { "rules.json", "rules.yaml", "rules.yml" }.Select(n => Path.Combine(dir, n)).FirstOrDefault(File.Exists);
@@ -156,19 +165,35 @@ internal static class Cli
 
     // ---- explore ------------------------------------------------------------------------------------------
 
-    private static int Explore(string dir, List<LoadedModel> loaded, DecentralizedSystem system, Options options, TextReader input, TextWriter output)
+    private static int Explore(string? dir, Options options, TextReader input, TextWriter output)
     {
-        var scenarios = options.Configs ?? Path.GetFullPath(Path.Combine(dir, "..", "..", "configs"));
-        var explorer = new Explorer(system, loaded, Analyzer, input, output, Directory.Exists(scenarios) ? scenarios : null);
-
-        var messages = new List<string> { "Start by typing a feature number, or  load missing-internet  (type scenarios to list them, help for more)." };
-        if (options.Config is not null)
+        while (true)
         {
-            messages.Clear();
-            explorer.SetSelection(LoadConfig(system, options.Config), messages);
-            messages.Insert(0, $"Loaded {Path.GetFileName(options.Config)}.");
+            dir ??= Launcher.Choose(input, output);
+            if (dir is null) return 0;
+            if (!Directory.Exists(dir))
+            {
+                output.WriteLine($"error: directory not found: {dir}");
+                return 2;
+            }
+
+            var explorer = new Explorer(dir, options, Analyzer, input, output);
+            var messages = new List<string> { "Start by typing a feature number, or  load <scenario>  (scenarios lists them, help for more)." };
+            explorer.Load(messages);
+
+            if (options.Config is not null)
+            {
+                messages.Clear();
+                explorer.SetSelection(LoadConfig(explorer.System, options.Config), messages);
+                messages.Insert(0, $"Loaded {Path.GetFileName(options.Config)}.");
+            }
+
+            if (explorer.Run(messages) == Explorer.Outcome.Quit) return 0;
+
+            // switch: back to the menu
+            dir = null;
+            options = options with { Config = null, Rules = null };
         }
-        return explorer.Run(messages);
     }
 
     // ---- models -------------------------------------------------------------------------------------------
